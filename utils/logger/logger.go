@@ -1,11 +1,12 @@
 package logger
 
 import (
+	"github.com/xolinar/kademlia-go/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-// Logger defines a flexible logging interface for different implementations.
+// ILogger defines a flexible logging interface for different implementations.
 type ILogger interface {
 	Debug(msg string, args ...any) // Logs a message at DEBUG level
 	Info(msg string, args ...any)  // Logs a message at INFO level
@@ -13,21 +14,24 @@ type ILogger interface {
 	Error(msg string, args ...any) // Logs a message at ERROR level
 }
 
-// Logger is an implementation of Logger using the Zap logging library.
+// Logger is an implementation of ILogger using the Zap logging library.
 type Logger struct {
 	log *zap.SugaredLogger
 }
 
-// NewZapLogger creates a new ZapLogger with the specified logging level and optional config.
+// NewLogger creates a new Logger with the specified zap.Config.
 // If config is nil, the default configuration is used.
-func NewLogger(level string, config *zap.Config) (*Logger, error) {
-	// Use the provided config or default if nil
-	if config == nil {
-		config = defaultZapConfig(level)
+func NewLogger(cfg *config.LoggingConfig, customConfig *zap.Config) (*Logger, error) {
+	// If custom zap.Config is provided, use it. Otherwise, use the default config.
+	var zapConfig *zap.Config
+	if customConfig != nil {
+		zapConfig = customConfig
+	} else {
+		zapConfig = defaultZapConfig(cfg)
 	}
 
 	// Build the logger
-	logger, err := config.Build()
+	logger, err := zapConfig.Build()
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +40,23 @@ func NewLogger(level string, config *zap.Config) (*Logger, error) {
 }
 
 // defaultZapConfig provides a default zap.Config with JSON encoding.
-func defaultZapConfig(level string) *zap.Config {
+// It accepts a LoggingConfig for customization or uses defaults if nil.
+func defaultZapConfig(cfg *config.LoggingConfig) *zap.Config {
+	// Set default log level and output
+	level := "info"
+	out := "stdout"
+
+	// Override defaults if LoggingConfig is provided
+	if cfg != nil {
+		if cfg.LogLevel != "" {
+			level = cfg.LogLevel
+		}
+		if cfg.LogOutput != "" {
+			out = cfg.LogOutput
+		}
+	}
+
+	// Map string log level to zapcore.Level
 	var zapLevel zapcore.Level
 	switch level {
 	case "debug":
@@ -67,7 +87,7 @@ func defaultZapConfig(level string) *zap.Config {
 			EncodeDuration: zapcore.SecondsDurationEncoder, // Duration in seconds
 			LineEnding:     zapcore.DefaultLineEnding,      // Default line ending
 		},
-		OutputPaths:      []string{"stdout"}, // Output to standard output
+		OutputPaths:      []string{out},      // Output to the specified log output
 		ErrorOutputPaths: []string{"stderr"}, // Errors to standard error
 	}
 }
