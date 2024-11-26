@@ -13,13 +13,15 @@ import (
 
 // newTestNodeID generates a NodeID for testing purposes.
 func newTestNodeID(id string) node.NodeID {
-	return node.NewNodeID([]byte(id)) // Assumes NodeID is a string; adjust if it's another type.
+	val, _ := node.NewNodeID([]byte(id))
+	return val // Assumes NodeID is a string; adjust if it's another type.
 }
 
 // newTestNode creates a new node with the given ID, IP address, and port for testing.
 func newTestNode(id string, address string, port uint16) *node.Node {
 	ip := net.ParseIP(address)
-	return node.NewNode(newTestNodeID(id), ip, port)
+	n, _ := node.NewNode(newTestNodeID(id), ip, port)
+	return n
 }
 
 // TestAddAndRetrieveNodes ensures that nodes can be added to the KBucket

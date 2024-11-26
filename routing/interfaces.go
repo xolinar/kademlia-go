@@ -39,6 +39,3 @@ type IKBucket interface {
 	// IsFull checks whether the K-bucket has reached its maximum capacity.
 	IsFull() bool
 }
-
-type IKBucketManager interface {
-}
