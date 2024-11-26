@@ -31,5 +31,5 @@ type INode interface {
 
 	// Distance calculates and returns the XOR-based distance between the current node and another
 	// node, which is essential for determining proximity and routing decisions in the Kademlia protocol.
-	Distance(id NodeID) [20]byte
+	Distance(node INode) [20]byte
 }

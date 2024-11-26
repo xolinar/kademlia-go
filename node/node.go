@@ -1,6 +1,9 @@
 package node
 
-import "net"
+import (
+	"fmt"
+	"net"
+)
 
 // Node represents a node in the Kademlia DHT network.
 //
@@ -19,14 +22,17 @@ type Node struct {
 	port    uint16 // Port for listening to incoming connections (range 0-65535).
 }
 
-// NewNode creates and returns a new Node instance with a unique NodeID,
-// based on the NodeID, IP address, and port.
-func NewNode(id NodeID, address net.IP, port uint16) *Node {
+// NewNode creates and returns a new Node instance with a unique NodeID.
+// Added validations for address and port correctness.
+func NewNode(id NodeID, address net.IP, port uint16) (*Node, error) {
+	if len(address) == 0 || address == nil {
+		return nil, fmt.Errorf("invalid IP address: cannot be nil or empty")
+	}
 	return &Node{
 		id:      id,
 		address: address,
 		port:    port,
-	}
+	}, nil
 }
 
 // ID returns the NodeID of the current node.
@@ -66,6 +72,6 @@ func (n *Node) Port() uint16 {
 //   - [Maymounkov, Petar; Mazieres, David. "Kademlia: A Peer-to-peer Information System Based on the XOR Metric"] [Section 2.1, "XOR Metric"]
 //
 // [Maymounkov, Petar; Mazieres, David. "Kademlia: A Peer-to-peer Information System Based on the XOR Metric"]: https://pdos.csail.mit.edu/~petar/papers/maymounkov-kademlia-lncs.pdf
-func (n *Node) Distance(id NodeID) [20]byte {
-	return n.id.XOR(id)
+func (n *Node) Distance(other INode) [20]byte {
+	return n.id.XOR(other.ID())
 }

@@ -3,6 +3,7 @@ package node
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"fmt"
 )
 
 // NodeID represents a unique identifier for a node in the Kademlia DHT network.
@@ -19,8 +20,12 @@ type NodeID [20]byte
 // This function returns a 160-bit hash, which matches the required NodeID size for Kademlia's DHT.
 // SHA-1 was selected for its ability to produce uniformly distributed identifiers, a property essential
 // for maintaining balanced distribution and efficient lookup performance in Kademlia networks.
-func NewNodeID(data []byte) NodeID {
-	return sha1.Sum(data)
+func NewNodeID(data []byte) (NodeID, error) {
+	if len(data) == 0 {
+		return NodeID{}, fmt.Errorf("input data cannot be empty")
+	}
+	hash := sha1.Sum(data)
+	return NodeID(hash), nil
 }
 
 // String converts a NodeID into its hexadecimal string representation for easy human-readable display.

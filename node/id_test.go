@@ -12,7 +12,7 @@ import (
 func TestNewNodeID(t *testing.T) {
 	data := []byte("node_data")
 	expectedHash := sha1.Sum(data)
-	nodeID := node.NewNodeID(data)
+	nodeID, _ := node.NewNodeID(data)
 
 	if nodeID != expectedHash {
 		t.Errorf("NewNodeID failed, expected %x, got %x", expectedHash, nodeID)
@@ -22,7 +22,7 @@ func TestNewNodeID(t *testing.T) {
 // TestString checks that the String method returns the correct hexadecimal representation.
 func TestString(t *testing.T) {
 	data := []byte("node_data")
-	nodeID := node.NewNodeID(data)
+	nodeID, _ := node.NewNodeID(data)
 	expectedStr := hex.EncodeToString(nodeID[:])
 
 	if nodeID.String() != expectedStr {
@@ -35,9 +35,9 @@ func TestEquals(t *testing.T) {
 	data1 := []byte("node_data_1")
 	data2 := []byte("node_data_2")
 
-	nodeID1 := node.NewNodeID(data1)
-	sameNodeID := node.NewNodeID(data1)
-	nodeID2 := node.NewNodeID(data2)
+	nodeID1, _ := node.NewNodeID(data1)
+	sameNodeID, _ := node.NewNodeID(data1)
+	nodeID2, _ := node.NewNodeID(data2)
 
 	if !nodeID1.Equals(sameNodeID) {
 		t.Error("Equals() failed, expected nodeID1 to equal sameNodeID")
@@ -52,8 +52,8 @@ func TestXOR(t *testing.T) {
 	data1 := []byte("node_data_1")
 	data2 := []byte("node_data_2")
 
-	nodeID1 := node.NewNodeID(data1)
-	nodeID2 := node.NewNodeID(data2)
+	nodeID1, _ := node.NewNodeID(data1)
+	nodeID2, _ := node.NewNodeID(data2)
 
 	xorResult := nodeID1.XOR(nodeID2)
 	for i := 0; i < len(nodeID1); i++ {
