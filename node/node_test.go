@@ -7,6 +7,8 @@ import (
 	"github.com/xolinar/kademlia-go/node"
 )
 
+// TestNewNode verifies the creation of a new Node instance with valid parameters,
+// ensuring that the Node's ID, address, and port are correctly set.
 func TestNewNode(t *testing.T) {
 	data, _ := node.NewNodeID([]byte("test_node_data"))
 	address := net.ParseIP("192.168.1.1")
@@ -60,8 +62,6 @@ func TestDistance(t *testing.T) {
 	if len(distance) != 20 {
 		t.Errorf("expected distance length 20, got %d", len(distance))
 	}
-
-	// Add specific XOR result tests if necessary
 }
 
 // TestSameNodeDistance checks that the distance between a node and itself is zero.
